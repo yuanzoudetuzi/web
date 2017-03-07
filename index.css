@@ -1,0 +1,152 @@
+body {
+    padding-bottom: 72px;
+}
+
+@media (min-width: 900px) {
+    body {
+        padding-left: 20%;
+        padding-right: 20%;
+    }
+}
+
+@media (max-width: 900px) {
+    body {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+}
+
+#lora_console {
+    padding-bottom: 16px;
+    border-bottom: solid #999999 1px;
+}
+
+
+#header {
+    text-align: center;
+}
+
+.input_title {
+    font-size: 16px;
+    line-height: 36px;
+}
+
+#search input {
+    width: 100%;
+}
+
+#gateway_search {
+    margin-bottom: 7px;
+}
+
+#node_search {
+    margin-bottom: 7px;
+}
+
+#search .precise_search {
+    background: #3399ff;
+    color: #f7f8f3;
+    cursor: pointer;
+    line-height: 34px;
+    border-radius: 3px;
+    text-align: center;
+}
+
+#search .vague_search {
+    background: forestgreen;
+    color: #f7f8f3;
+    cursor: pointer;
+    line-height: 34px;
+    border-radius: 3px;
+    text-align: center;
+}
+
+#search .clear_search {
+    background: orangered;
+    color: #f7f8f3;
+    cursor: pointer;
+    line-height: 34px;
+    border-radius: 3px;
+    text-align: center;
+}
+
+#search .precise_search:hover {
+    opacity: 0.7;
+}
+
+#search .vague_search:hover {
+    opacity: 0.7;
+}
+
+#search .clear_search:hover {
+    opacity: 0.7;
+}
+
+#result_title {
+    text-align: center;
+    height: 36px;
+}
+
+#result_presenter {
+    margin-top: 16px;
+}
+
+.node {
+    background: #f7f8f3;
+    border: solid #3399ff 1px;
+    padding: 7px 16px;
+    margin-top: 7px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.data_rate_div {
+    color: #3399ff;
+    border-right: solid #999999 1px;
+}
+
+.data_frequency_div {
+    color: forestgreen;
+    border-left: solid #999999 1px;
+}
+
+.gateway {
+    background: #f7f8f3;
+    border: solid forestgreen 1px;
+    padding: 7px 16px;
+    margin-top: 7px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.command_div {
+    padding: 7px 16px;
+}
+
+.command {
+    background: orangered;
+    color: #f7f8f3;
+    text-align: center;
+    line-height: 34px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.command:hover {
+    opacity: 0.7;
+}
+
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 1s
+}
+.fade-enter, .fade-leave-active {
+    opacity: 0
+}
+
+.list-enter-active, .list-leave-active {
+    transition: all 1s;
+}
+.list-enter, .list-leave-active {
+    opacity: 0;
+}
+

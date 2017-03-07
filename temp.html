@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lora Administration</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/normalize/4.2.0/normalize.min.css"/>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css"/>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css"/>
+
+    <!-- Bootstrap -->
+    <!--<link rel="stylesheet" href="bootstrap/css/bootstrap.min.css"  media="screen">-->
+    <!--My Style-->
+    <link rel="stylesheet" href="index_ylt.css">
+
+</head>
+<body>
+<div id="index">
+    <div class="row">
+        <div  class="col-md-3 gateway_ini">
+            <h4>GateWay List</h4>
+            <div id="gateway_list">
+
+            </div>
+        </div>
+        <div class="col-md-9">
+            <h1>Lora Management System</h1>
+            <div class="row navigation_list" >
+                <button class="btn btn-all">ALL</button>
+                <div class="btn-group  btndown-margin">
+                    <button  class="btn btn-default dropdown-toggle" data-toggle="dropdown">Inquiry
+                        <i class="fa fa-angle-double-down btndownPicture-margin"></i></button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li  id="btn_searchGateway" @click="searchGateway_Button">Inquiry Gateway</li>
+                        <li id="btn_searchNode" @click="searchNode_Button">Inquiry Node</li>
+                    </ul>
+                </div>
+                <div class="btn-group btndown-margin">
+                    <button  class="btn btn-default dropdown-toggle" data-toggle="dropdown">Manage
+                        <i class="fa fa-angle-double-down btndownPicture-margin"></i></button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li  id="btn_searchCommand" @click="searchCommand_Button">Inquiry Gateway</li>
+                        <li id="btn_sendCommand" @click="sendCommand_Button">Inquiry Node</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row presentdata">
+                <!--Gateway搜索框 开始不显示，隐藏-->
+                <div  class="row" id="search_gateway">
+                    <div class="col-md-3 col-xs-12">
+                        <label for="gateway_input">
+                            <div class="input_title">GateWay Id:</div>
+                        </label>
+                    </div>
+                    <div class="col-md-6 col-xs-12">
+                        <template id="gatewayId">
+                            <input class="form-control" id="gateway_input" placeholder="GateWay Id" v-model="gatewayId">
+                        </template>
+                    </div>
+                </div>
+                <!--node搜索框 开始不显示，隐藏-->
+                <div  class="row" id="search_node">
+                    <div class="col-md-3 col-xs-12">
+                        <label for="node_input">
+                            <div class="input_title">Node Id:</div>
+                        </label>
+                    </div>
+                    <div class="col-md-6 col-xs-12">
+                        <template id="nodeId">
+                            <input class="form-control" id="node_input" placeholder="Node Id" v-model="nodeId">
+                        </template>
+                    </div>
+                </div>
+                <!--搜索操作框 开始不显示，隐藏-->
+                <div class="row" id="search_operator">
+                    <div class="col-md-4 col-xs-4">
+                        <button id="precise_search" class="btn-operat precise_search" @click="preciseSearch">
+                            <span class="glyphicon glyphicon-search btn_op_margin" aria-hidden="true"></span>精确查询</button>
+                    </div>
+                    <div class="col-md-4 col-xs-4">
+                        <button id="vague_search" class="btn-operat vague_search btn_op_margin" @click="vagueSearch">
+                            <span class="glyphicon glyphicon-search btn_op_margin" aria-hidden="true"></span>模糊查询</button>
+                    </div>
+                    <div class="col-md-4 col-xs-4">
+                        <button id="clear_search" class="btn-operat clear_search btn_op_margin" @click="clearSearch">
+                            <span class="glyphicon glyphicon-remove btn_op_margin" aria-hidden="true"></span>清除结果</button>
+                    </div>
+                </div>
+
+                <!--显示搜索的界面-->
+                <div id="result_title">
+                    <h3>{{searchTitle}}</h3>
+                </div>
+
+                <div v-if="nodeListStatus" id="node_list_presenter">
+                    <transition-group name="list">
+                        <node-item v-for="item in nodeList" :node_id="item.nodeId" :water="item.water"
+                                   :power="item.power" :key="item.nodeId"></node-item>
+                    </transition-group>
+                </div>
+
+                <div v-if="gatewayListStatus" id="gateway_list_presenter" @click="setNodeList">
+                    <transition-group name="list">
+                        <gateway-item v-for="item in gatewayList" :gateway_id="item.gatewayId" :max_opacity="item.maxOpacity"
+                                      :current_opacity="item.currentOpacity" :key="item.gatewayId"></gateway-item>
+                    </transition-group>
+                </div>
+
+                <!--有问题-->
+                <transition name="fade">
+                    <div v-if="nodeDetailStatus" id="node_result_detail_presenter">
+                        <node-detail :node_id="detailNodeId"></node-detail>
+                    </div>
+                </transition>
+
+                <div v-if="commandListStatus">
+                    <transition-group name="list">
+                        <command-item v-for="item in commandList" :node_id="item.nodeId"
+                                      :command_cid="item.commandCID": command_content="item.commandContent"></command-item>
+
+                    </transition-group>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<template id="nodeItem">
+    <div class="node">
+        <div class="row">
+            <div class="node_id row col-md-4 col-xs-4">
+                <div class="col-md-6 col-xs-6">
+                    节点ID：
+                </div>
+                <div class="col-md-6 col-xs-6">
+                    {{node_id}}
+                </div>
+            </div>
+            <div class="water_amount row col-md-4 col-xs-4">
+                <div class="col-md-6 col-xs-6">
+                    水量/吨：
+                </div>
+                <div class="col-md-6 col-xs-6">
+                    {{water}}
+                </div>
+            </div>
+            <div class="power row col-md-4 col-xs-4">
+                <div class="col-md-6 col-xs-6">
+                    电量/千瓦：
+                </div>
+                <div class="col-md-6 col-xs-6">
+                    {{power}}
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template id="gatewayItem">
+    <div class="gateway">
+        <div class="row">
+            <div class="node_id row col-md-4 col-xs-4">
+                <div class="col-md-6 col-xs-6">
+                    网关ID：
+                </div>
+                <div class="col-md-6 col-xs-6">
+                    {{gateway_id}}
+                </div>
+            </div>
+            <div class="water_amount row col-md-4 col-xs-4">
+                <div class="col-md-6 col-xs-6">
+                    最大容量：
+                </div>
+                <div class="col-md-6 col-xs-6">
+                    {{max_opacity}}
+                </div>
+            </div>
+            <div class="power row col-md-4 col-xs-4">
+                <div class="col-md-6 col-xs-6">
+                    当前容量：
+                </div>
+                <div class="col-md-6 col-xs-6">
+                    {{current_opacity}}
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template id="nodeDetail">
+    <div class="node">
+        <div class="row">
+            <div class="node_id row col-md-4 col-xs-12">
+                <div class="col-md-6 col-xs-6">
+                    节点ID：
+                </div>
+                <div class="col-md-6 col-xs-6">
+                    {{node_id}}
+                </div>
+            </div>
+            <div class="water_amount row col-md-4 col-xs-12">
+                <div class="col-md-6 col-xs-6">
+                    水量/吨：
+                </div>
+                <div class="col-md-6 col-xs-6">
+                    1234
+                </div>
+            </div>
+            <div class="power row col-md-4 col-xs-12">
+                <div class="col-md-6 col-xs-6">
+                    电量/千瓦：
+                </div>
+                <div class="col-md-6 col-xs-6">
+                    4321
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-2 col-xs-6">
+                信道：
+            </div>
+            <div class="col-md-2 col-xs-6">
+                null
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="data_rate_div col-md-6 col-xs-12">
+                <div>速率</div>
+                <div class="row">
+                    <div class="col-md-4 col-xs-9">上行传输速率：</div>
+                    <div class="col-md-8 col-xs-3">123bps</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 col-xs-9">第一接收窗口速率：</div>
+                    <div class="col-md-8 col-xs-3">123bps</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 col-xs-9">第二接收窗口速率：</div>
+                    <div class="col-md-8 col-xs-3">123bps</div>
+                </div>
+            </div>
+
+            <div class="data_frequency_div col-md-6 col-xs-12">
+                <div>频率</div>
+                <div class="row">
+                    <div class="col-md-4 col-xs-9">上行频率：</div>
+                    <div class="col-md-8 col-xs-3">123MHz</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 col-xs-9">第一接收窗口频率：</div>
+                    <div class="col-md-8 col-xs-3">123MHz</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 col-xs-9">第二接收窗口频率：</div>
+                    <div class="col-md-8 col-xs-3">123MHz</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="command_div col-xs-4 col-md-2">
+                <div class="command">
+                    <div>操作1</div>
+                </div>
+            </div>
+            <div class="command_div col-xs-4 col-md-2">
+                <div class="command">
+                    <div>操作2</div>
+                </div>
+            </div>
+            <div class="command_div col-xs-4 col-md-2">
+                <div class="command">
+                    <div>操作3</div>
+                </div>
+            </div>
+            <div class="command_div col-xs-4 col-md-2">
+                <div class="command">
+                    <div>操作4</div>
+                </div>
+            </div>
+            <div class="command_div col-xs-4 col-md-2">
+                <div class="command">
+                    <div>操作5</div>
+                </div>
+            </div>
+            <div class="command_div col-xs-4 col-md-2">
+                <div class="command">
+                    <div>操作6</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!--Command 模板-->
+<template id="commandItem">
+    <div>
+        <div class="row">
+            <div class="row col-md-4 col-xs-4">
+                <div class="col-md-6 col-xs-6">
+                    节点ID：
+                </div>
+                <div class="col-md-6 col-xs-6">
+                    {{node_id}}
+                </div>
+            </div>
+            <div class="row col-md-4 col-xs-4">
+                <div class="col-md-6 col-xs-6">
+                    命令CID：
+                </div>
+                <div class="col-md-6 col-xs-6">
+                    {{command_cid}}
+                </div>
+            </div>
+            <div class="row col-md-4 col-xs-4">
+                <div class="col-md-6 col-xs-6">
+                    命令内容：
+                </div>
+                <div class="col-md-6 col-xs-6">
+                    {{command_content}}
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+</body>
+<script src="vue.js"></script>
+<script src="vue_ylt.js"></script>
+<script src="index_ylt.js"></script>
+<script src="http://code.jquery.com/jquery.js"></script>
+<script src="bootstrap/js/bootstrap.min.js"></script>
+</html>
